@@ -71,7 +71,6 @@ def HistG(df):
     st.pyplot()
     plt.hist(df["weekday"],bins=7,range = (-.5,6.5), rwidth=0.8)
     plt.title('Fréquence de jours de la semaine - Uber - Avril 2014, axe x= jours de la semaine et axe y= fréquence')
-    st.pyplot()
 
 
 @st.cache
@@ -80,7 +79,6 @@ def Heatmap(br):
     gdf = br.groupby(['hour','weekday']).apply(count_rows).unstack()
     sns.heatmap(gdf, linewidths = .5)
     st.write("Heatmap entre l'heure et les jours de la semaine")
-    st.pyplot()
 
 @st.cache(suppress_st_warning=True)
 def plotweek(rt):
@@ -90,22 +88,20 @@ def plotweek(rt):
     plt.ylabel('Frequence')
     plt.title('Frequence par Heure - Uber - April 2014')
     plt.xticks(np.arange(7), 'Mon Tue Wed Thu Fri Sat Sun'.split())
-    st.pyplot()
+    
 
 @st.cache(suppress_st_warning=True)
 def Scatter(rt,sd,dr):
     plt.figure(figsize =(20,20), dpi=80)
     plt.scatter(sd,dr)
     plt.title('Relation entre la Longitude et la Latiude - Uber - Avril 2014, axe x= Latitude et axe y= Longitude')
-    st.pyplot()
+    
 
-@st.cache(suppress_st_warning=True)
 def ScatterGrid(sd,dr):
     plt.plot(sd, dr, '.', ms = 2, alpha = .5)
     plt.xlim(-74.2, -73.7)
     plt.ylim(40.7, 41)
     plt.grid()
-    st.pyplot()
 
 #@st.cache(suppress_st_warning=True)
 def Datatransf(rt):
@@ -126,20 +122,17 @@ def Datatransf(rt):
 def Histviz(rt):
     plt.hist(ds["trip_distance"],bins = 30, rwidth=0.8, range=(0.5,21.5))  
     plt.title('Frequency by Trip distance - Ny Trip - January 2015, x-axis trip distance and y-axis Frequency')
-    st.pyplot()
 
 @st.cache(suppress_st_warning=True)
 def Vendorplot(ds):
     ds.sort_values(by=['trip_distance'])
     sns.countplot(ds['VendorID'])
-    st.pyplot()
 
 
 @st.cache(suppress_st_warning=True)
 def nbpassager(rt):
     st.write(rt.passenger_count.value_counts())
     sns.countplot(x='passenger_count',data=rt)
-    st.pyplot()
 
 
 @st.cache(suppress_st_warning=True)
@@ -150,16 +143,14 @@ def colorizeScatter(rt):
     plt.hist(rt.dropoff_latitude, bins = 100, range = (40.5, 41), color = 'r', label = 'Latitude')
     plt.legend(loc = 'upper left')
     plt.show()
-    st.pyplot()
 
-@st.cache(suppress_st_warning=True)    
+@st.cache(suppress_st_warning=True)
 def NyLongLat(rt) : 
     plt.figure(figsize = (20, 20))
     plt.plot(rt.pickup_longitude, rt.pickup_latitude, '.', ms = 2, alpha = .5)
     plt.xlim(-74.05, -73.75)
     plt.ylim(40.6, 40.98)
     plt.grid()
-    st.pyplot()
 
 
 @st.cache(suppress_st_warning=True)
@@ -170,7 +161,6 @@ def groupbyhours(rt):
     plt.plot(by_hour_pickup, color = 'b', label = 'pickup')
     plt.plot(by_hour_dropoff, color = 'r', label = 'dropoff')
     plt.legend()
-    st.pyplot()
 
 @st.cache(suppress_st_warning=True)
 def pickdrop(rt):
@@ -181,7 +171,6 @@ def pickdrop(rt):
     plt.ylim(40.6, 41.1)
     plt.legend()
     plt.grid()
-    st.pyplot()
 
 def sidebarr():
     add_selectbox = st.sidebar.selectbox(
@@ -212,7 +201,7 @@ for i in range(100):
 
 #Importation du premier Dataset
 st.write('Ce dataset va étudier les trajets en Uber et à New York, pour en savoir veuillez utiliser le navigateur ci dessous')
-components.iframe("https://pip.pypa.io/en/stable/user_guide/#")
+components.iframe("https://www.google.com/")
 st.write('Pour en savoir plus sur Stremlit :')
 components.iframe("https://docs.streamlit.io/en/latest")
 
@@ -229,6 +218,7 @@ st.write("Affichage des fréquences d'apparition des variables")
 #@st.cache(suppress_st_warning=True)
 
 hist(df)
+st.pyplot()
 
 
 
@@ -244,16 +234,20 @@ FiltrateH(df)
 
 
 HistG(df)
+st.pyplot()
 
 Heatmap(df)
+st.pyplot()
 
 
 plotweek(df)
+st.pyplot()
 
 
 
 
 Scatter(df,df.Lat,df.Lon)
+st.pyplot()
 
 #ScatterGrid(df.Lat,df.Lon)
 st.write(" Les voyages en diagonale semblent très plebiscités")
@@ -269,26 +263,31 @@ ds= Datatransf(ds)
 
 
 Histviz(ds)
-
+st.pyplot()
 
 Vendorplot(ds)
+st.pyplot()
 st.write("On peut voir que le vendeur 2 vend un peu plus de billets mais les écarts restent relatifs")
 
 nbpassager(ds)
+st.pyplot()
 st.write("Les voyages solo sont privilégiés")
 
 #ScatterGrid(ds.pickup_latitude,ds.pickup_longitude)
 
 
 colorizeScatter(ds)
+st.pyplot()
 
 
 NyLongLat(ds)
+st.pyplot()
 
 
 groupbyhours(ds)
+st.pyplot()
 
 
 
 pickdrop(ds)
-
+st.pyplot()
