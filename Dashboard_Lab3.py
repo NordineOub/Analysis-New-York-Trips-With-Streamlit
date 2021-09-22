@@ -99,6 +99,7 @@ def Scatter(rt,sd,dr):
     plt.title('Relation entre la Longitude et la Latiude - Uber - Avril 2014, axe x= Latitude et axe y= Longitude')
     st.pyplot()
 
+@st.cache(suppress_st_warning=True)
 def ScatterGrid(sd,dr):
     plt.plot(sd, dr, '.', ms = 2, alpha = .5)
     plt.xlim(-74.2, -73.7)
@@ -151,6 +152,7 @@ def colorizeScatter(rt):
     plt.show()
     st.pyplot()
 
+@st.cache(suppress_st_warning=True)    
 def NyLongLat(rt) : 
     plt.figure(figsize = (20, 20))
     plt.plot(rt.pickup_longitude, rt.pickup_latitude, '.', ms = 2, alpha = .5)
