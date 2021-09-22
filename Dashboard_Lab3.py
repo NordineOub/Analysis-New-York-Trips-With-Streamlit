@@ -210,7 +210,7 @@ for i in range(100):
 
 #Importation du premier Dataset
 st.write('Ce dataset va étudier les trajets en Uber et à New York, pour en savoir veuillez utiliser le navigateur ci dessous')
-components.iframe("https://www.google.com/")
+components.iframe("https://pip.pypa.io/en/stable/user_guide/#")
 st.write('Pour en savoir plus sur Stremlit :')
 components.iframe("https://docs.streamlit.io/en/latest")
 
