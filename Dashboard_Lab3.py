@@ -24,17 +24,23 @@ def timeit(func):
     return timeit_wrapper
 
 
+@st.cache(suppress_st_warning=True)
 def importData(wt): 
     val= pd.read_csv(wt)
-    st.write("Taille du dataset :")
-    st.write(val.shape)
-    st.write("Nombres de variables :")
-    st.write(val.columns)
-    st.write("Premieres lignes de dataset")
-    st.write(val.head(5))
     return val
 
+
+def PlotDataset(rt):
+    st.write("Taille du dataset :")
+    st.write(rt.shape)
+    st.write("Nombres de variables :")
+    st.write(rt.columns)
+    st.write("Premieres lignes de dataset")
+    st.write(rt.head(5))
+
+
 @timeit
+@st.cache(suppress_st_warning=True)
 def FirstTrans(df):
     df["Date/Time"]= pd.to_datetime(df["Date/Time"])
     df['dom'] = df['Date/Time'].dt.day
@@ -45,24 +51,27 @@ def FirstTrans(df):
     return df
 
 
+
+
 @timeit
-@st.cache(suppress_st_warning=True)
 def hist(df):
     plt.hist(df["dom"],bins = 30, rwidth=0.8, range=(0.5,30.5))
     plt.title('Frequency by DoM - Uber - April 2014, x-axis Date of the month and y-axis Frequency')
 
-#@st.cache(suppress_st_warning=True)
+@st.cache(suppress_st_warning=True)
 def count_rows(rows): 
     return len(rows)
 
 @st.cache(suppress_st_warning=True)
-def FiltrateH(df):
-    values = df['Date/Time'].drop_duplicates()
+def FiltrateH(fg):
+    values = fg['Date/Time'].drop_duplicates()
+    return values
+
+def PlotHour(fg,values):
     date_to_filter = st.selectbox('Choisir date', values)
     st.subheader(f'Données de chaque trip à {date_to_filter}')
-    st.write(df[df['Date/Time'] == date_to_filter])
+    st.write(fg[fg['Date/Time'] == date_to_filter])
 
-@st.cache(suppress_st_warning=True)
 #@st.set_option('deprecation.showPyplotGlobalUse', False)
 def HistG(df):
     plt.figure(figsize = (30, 15))
@@ -73,14 +82,11 @@ def HistG(df):
     plt.title('Fréquence de jours de la semaine - Uber - Avril 2014, axe x= jours de la semaine et axe y= fréquence')
 
 
-@st.cache
-#@st.set_option('deprecation.showPyplotGlobalUse', False)
 def Heatmap(br):
     gdf = br.groupby(['hour','weekday']).apply(count_rows).unstack()
     sns.heatmap(gdf, linewidths = .5)
     st.write("Heatmap entre l'heure et les jours de la semaine")
 
-@st.cache(suppress_st_warning=True)
 def plotweek(rt):
     plt.figure(figsize = (30, 15))
     plt.hist(rt.weekday, bins = 7, rwidth = 0.8, range = (-.5, 6.5))
@@ -90,7 +96,6 @@ def plotweek(rt):
     plt.xticks(np.arange(7), 'Mon Tue Wed Thu Fri Sat Sun'.split())
     
 
-@st.cache(suppress_st_warning=True)
 def Scatter(rt,sd,dr):
     plt.figure(figsize =(20,20), dpi=80)
     plt.scatter(sd,dr)
@@ -99,9 +104,8 @@ def Scatter(rt,sd,dr):
 
 def ScatterGrid(sd,dr):
     plt.plot(sd, dr, '.', ms = 2, alpha = .5)
-    plt.xlim(-74.2, -73.7)
-    plt.ylim(40.7, 41)
     plt.grid()
+    st.pyplot()
 
 #@st.cache(suppress_st_warning=True)
 def Datatransf(rt):
@@ -118,51 +122,63 @@ def Datatransf(rt):
     st.write(rt.head(5))
     return rt
 
-@st.cache(suppress_st_warning=True)
 def Histviz(rt):
-    plt.hist(ds["trip_distance"],bins = 30, rwidth=0.8, range=(0.5,21.5))  
+    plt.hist(rt["trip_distance"],bins = 30, rwidth=0.8, range=(0.5,21.5))  
     plt.title('Frequency by Trip distance - Ny Trip - January 2015, x-axis trip distance and y-axis Frequency')
-
-@st.cache(suppress_st_warning=True)
-def Vendorplot(ds):
-    ds.sort_values(by=['trip_distance'])
-    sns.countplot(ds['VendorID'])
+    st.pyplot()
 
 
 @st.cache(suppress_st_warning=True)
+def Vendorsort(rt):
+    rt.sort_values(by=['trip_distance'])
+    return rt
+    
+def Vendorplot(rt):
+    sns.countplot(rt['VendorID'])
+    st.pyplot()
+    st.write("On peut voir que le vendeur 2 vend un peu plus de billets mais les écarts restent relatifs")
+
+
+
+
 def nbpassager(rt):
     st.write(rt.passenger_count.value_counts())
     sns.countplot(x='passenger_count',data=rt)
+    st.pyplot()
 
 
-@st.cache(suppress_st_warning=True)
+
 def colorizeScatter(rt):   
     plt.hist(rt.dropoff_longitude, bins = 100, range = (-74.1, -73.9), color = 'b', alpha = 0.5, label = 'Longitude')
     plt.legend(loc = 'best')
     plt.twiny()
     plt.hist(rt.dropoff_latitude, bins = 100, range = (40.5, 41), color = 'r', label = 'Latitude')
     plt.legend(loc = 'upper left')
-    plt.show()
+    st.pyplot()
 
-@st.cache(suppress_st_warning=True)
+
 def NyLongLat(rt) : 
     plt.figure(figsize = (20, 20))
     plt.plot(rt.pickup_longitude, rt.pickup_latitude, '.', ms = 2, alpha = .5)
     plt.xlim(-74.05, -73.75)
     plt.ylim(40.6, 40.98)
     plt.grid()
+    st.pyplot()
 
 
 @st.cache(suppress_st_warning=True)
 def groupbyhours(rt):
     by_hour_dropoff = rt.groupby('dropoff_day_hour').apply(count_rows)
     by_hour_pickup = rt.groupby('pickup_day_hour').apply(count_rows)
-    plt.figure(figsize = (15, 10))
-    plt.plot(by_hour_pickup, color = 'b', label = 'pickup')
-    plt.plot(by_hour_dropoff, color = 'r', label = 'dropoff')
-    plt.legend()
+    return by_hour_pickup, by_hour_dropoff
 
-@st.cache(suppress_st_warning=True)
+def plotbyhours(x,y):
+    plt.figure(figsize = (15, 10))
+    plt.plot(x, color = 'b', label = 'pickup')
+    plt.plot(y, color = 'r', label = 'dropoff')
+    plt.legend()
+    st.pyplot()
+
 def pickdrop(rt):
     plt.figure(figsize = (20, 20))
     plt.plot(rt.pickup_longitude, rt.pickup_latitude, '.', ms = 2, alpha = .5, color = 'r', label = 'pickup')
@@ -171,6 +187,7 @@ def pickdrop(rt):
     plt.ylim(40.6, 41.1)
     plt.legend()
     plt.grid()
+    st.pyplot()
 
 def sidebarr():
     add_selectbox = st.sidebar.selectbox(
@@ -207,8 +224,7 @@ components.iframe("https://docs.streamlit.io/en/latest")
 
 df = importData("uber-raw-data-apr14.csv")
 
-#@st.cache(suppress_st_warning=True)
-
+PlotDataset(df)
 
 df= FirstTrans(df)
 
@@ -229,7 +245,8 @@ st.pyplot()
 st.write("Choisissez une heure")
 
 
-FiltrateH(df)
+values =FiltrateH(df)
+PlotHour(df,values)
 
 
 
@@ -249,13 +266,15 @@ st.pyplot()
 Scatter(df,df.Lat,df.Lon)
 st.pyplot()
 
-#ScatterGrid(df.Lat,df.Lon)
+ScatterGrid(df.Lat,df.Lon)
+
 st.write(" Les voyages en diagonale semblent très plebiscités")
 
 st.title ("Utilisation du Data NY TRIP 2015")
 
 ds= importData("ny-trips-data.csv")
 
+PlotDataset(ds)
 
 #Transformation du Dataset
 
@@ -263,31 +282,31 @@ ds= Datatransf(ds)
 
 
 Histviz(ds)
+plt.hist(ds.trip_distance,bins = 30, rwidth=0.8, range=(0.5,21.5))  
+plt.title('Frequency by Trip distance - Ny Trip - January 2015, x-axis trip distance and y-axis Frequency')
 st.pyplot()
 
+
+ds = Vendorsort(ds)
 Vendorplot(ds)
-st.pyplot()
-st.write("On peut voir que le vendeur 2 vend un peu plus de billets mais les écarts restent relatifs")
+
 
 nbpassager(ds)
-st.pyplot()
 st.write("Les voyages solo sont privilégiés")
 
-#ScatterGrid(ds.pickup_latitude,ds.pickup_longitude)
+ScatterGrid(ds.pickup_latitude,ds.pickup_longitude)
 
 
 colorizeScatter(ds)
-st.pyplot()
 
 
 NyLongLat(ds)
-st.pyplot()
 
 
-groupbyhours(ds)
-st.pyplot()
+val1, val2 =groupbyhours(ds)
+
+plotbyhours(val1,val2)
 
 
 
 pickdrop(ds)
-st.pyplot()
